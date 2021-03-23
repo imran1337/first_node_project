@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Node Mongo Db Site</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+      integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <h1 class="text-center">My node mongo db site</h1>
+    <div id="userNameDiv"></div>
+    <div class="container mt-5">
+      <div class="row">
+        <form class="w-100">
+          <input
+            type="text"
+            placeholder="type your name"
+            class="form-control"
+            name="name"
+            id="name"
+          />
+          <input
+            type="text"
+            placeholder="type your user name"
+            class="form-control my-2"
+            name="userName"
+            id="userName"
+          />
+          <input
+            type="email"
+            placeholder="type your email address"
+            class="form-control"
+            name="email"
+            id="email"
+          />
+          <button class="btn btn-primary mt-2 w-100" id="addUser">
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
+    <script>
+      const divTag = document.getElementById("userNameDiv");
+      const userData = async () => {
+        const data = await fetch("http://localhost:3007/users");
+        const users = await data.json();
+        return users;
+      };
+      userData().then((users) => {
+        users.map((user) => {
+          divTag.innerHTML += `<h6>${user.name}</h6>`;
+        });
+      });
+      // post data to the server
+      const inputValName = document.getElementById("name");
+      const inputValUserName = document.getElementById("userName");
+      const inputValEmail = document.getElementById("email");
+      const addUserBtn = document.getElementById("addUser");
+      addUserBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const myUser = {
+          name: inputValName.value,
+          username: inputValUserName.value,
+          email: inputValEmail.value,
+        };
+        console.log(myUser);
+        // post
+        fetch("http://localhost:3007/addUser", {
+          method: "POST",
+          body: JSON.stringify(myUser),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            updateUser(data.user);
+          })
+          .catch((err) => console.log(err));
+      });
+      function updateUser(user) {
+        divTag.innerHTML += `<h6>${user.name}</h6>`;
+      }
+    </script>
+  </body>
+</html>
